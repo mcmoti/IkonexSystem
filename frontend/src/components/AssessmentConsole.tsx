@@ -1,6 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast'; // We might need to install react-hot-toast or just mock it
 
 interface Student {
@@ -15,11 +13,6 @@ interface Assessment {
   maxScore: number;
 }
 
-interface Score {
-  studentId: string;
-  assessmentId: string;
-  score: number;
-}
 
 export default function AssessmentConsole({ streamId, subjectId }: { streamId: string; subjectId: string }) {
   const [students, setStudents] = useState<Student[]>([]);
@@ -66,8 +59,8 @@ export default function AssessmentConsole({ streamId, subjectId }: { streamId: s
     });
 
     try {
-      // In a real app we'd call our backend API
       // await axios.post('/api/scores/batch', { scores: payload });
+      console.log('Sending payload:', payload);
       toast.success('Scores saved successfully!');
     } catch (error) {
       toast.error('Failed to save scores.');
