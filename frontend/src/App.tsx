@@ -1,122 +1,87 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState } from 'react';
+import Dashboard from './components/Dashboard';
+import StudentRoster from './components/StudentRoster';
+import AssessmentConsole from './components/AssessmentConsole';
+import { LayoutDashboard, Users, FileEdit } from 'lucide-react';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'roster' | 'assessments'>('dashboard');
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="flex h-screen bg-gray-50 font-sans">
+      <Toaster position="top-right" />
+      
+      {/* Sidebar */}
+      <div className="w-64 bg-navy text-white flex flex-col">
+        <div className="p-6">
+          <h1 className="text-2xl font-bold tracking-wider">IKONEX</h1>
+          <p className="text-ice-blue text-sm opacity-80">Academy Management</p>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
+        
+        <nav className="flex-1 px-4 space-y-2 mt-4">
+          <button 
+            onClick={() => setActiveTab('dashboard')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+              activeTab === 'dashboard' ? 'bg-cobalt text-white' : 'text-gray-300 hover:bg-white/10'
+            }`}
+          >
+            <LayoutDashboard size={20} />
+            <span className="font-medium">Dashboard</span>
+          </button>
+          
+          <button 
+            onClick={() => setActiveTab('roster')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+              activeTab === 'roster' ? 'bg-cobalt text-white' : 'text-gray-300 hover:bg-white/10'
+            }`}
+          >
+            <Users size={20} />
+            <span className="font-medium">Student Roster</span>
+          </button>
+          
+          <button 
+            onClick={() => setActiveTab('assessments')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+              activeTab === 'assessments' ? 'bg-cobalt text-white' : 'text-gray-300 hover:bg-white/10'
+            }`}
+          >
+            <FileEdit size={20} />
+            <span className="font-medium">Assessments</span>
+          </button>
+        </nav>
+        
+        <div className="p-6 border-t border-white/10">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-cobalt flex items-center justify-center font-bold">
+              SA
+            </div>
+            <div>
+              <p className="font-medium text-sm">Super Admin</p>
+              <p className="text-xs text-gray-400">admin@ikonex.com</p>
+            </div>
+          </div>
         </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      </div>
 
-      <div className="ticks"></div>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Top Header */}
+        <header className="h-16 bg-white border-b border-gray-200 flex items-center px-8">
+          <h2 className="text-xl font-semibold text-navy capitalize">
+            {activeTab === 'roster' ? 'Student Roster' : activeTab}
+          </h2>
+        </header>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        {/* Scrollable Content Area */}
+        <main className="flex-1 overflow-auto p-8">
+          {activeTab === 'dashboard' && <Dashboard />}
+          {activeTab === 'roster' && <StudentRoster />}
+          {activeTab === 'assessments' && <AssessmentConsole streamId="1" subjectId="1" />}
+        </main>
+      </div>
+    </div>
+  );
 }
 
-export default App
+export default App;
