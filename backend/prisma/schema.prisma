@@ -1,0 +1,152 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  role         String
+  createdAt    DateTime @default(now())
+}
+
+model AcademicYear {
+  id          String   @id @default(uuid())
+  name        String   // e.g., "2024"
+  isCurrent   Boolean  @default(false)
+  streams     ClassStream[]
+  assessments Assessment[]
+  results     StudentResult[]
+  reports     Report[]
+}
+
+model ClassStream {
+  id             String   @id @default(uuid())
+  name           String   // e.g., "Form 1A"
+  capacity       Int
+  academicYearId String
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
+  classTeacherId String?
+  students       Student[]
+  subjects       StreamSubject[]
+  assessments    Assessment[]
+}
+
+model Student {
+  id              String   @id @default(uuid())
+  admissionNumber String   @unique
+  firstName       String
+  lastName        String
+  gender          String
+  dateOfBirth     DateTime
+  photoUrl        String?
+  parentName      String?
+  parentContact   String?
+  email           String?
+  address         String?
+  streamId        String
+  stream          ClassStream @relation(fields: [streamId], references: [id])
+  scores          StudentScore[]
+  results         StudentResult[]
+  reports         Report[]
+}
+
+model Subject {
+  id           String   @id @default(uuid())
+  code         String   @unique
+  name         String
+  description  String?
+  isCompulsory Boolean  @default(true)
+  streams      StreamSubject[]
+  assessments  Assessment[]
+  results      StudentResult[]
+}
+
+model StreamSubject {
+  id        String   @id @default(uuid())
+  streamId  String
+  subjectId String
+  stream    ClassStream @relation(fields: [streamId], references: [id])
+  subject   Subject     @relation(fields: [subjectId], references: [id])
+
+  @@unique([streamId, subjectId])
+}
+
+model Assessment {
+  id             String   @id @default(uuid())
+  name           String
+  type           String
+  subjectId      String
+  streamId       String
+  academicYearId String
+  maxScore       Float
+  weight         Float    @default(1.0)
+  subject        Subject  @relation(fields: [subjectId], references: [id])
+  stream         ClassStream @relation(fields: [streamId], references: [id])
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
+  scores         StudentScore[]
+}
+
+model StudentScore {
+  id           String   @id @default(uuid())
+  studentId    String
+  assessmentId String
+  score        Float
+  student      Student  @relation(fields: [studentId], references: [id])
+  assessment   Assessment @relation(fields: [assessmentId], references: [id])
+
+  @@unique([studentId, assessmentId])
+}
+
+model GradingScale {
+  id       String @id @default(uuid())
+  grade    String // A, A-, B+, etc.
+  minScore Float
+  maxScore Float
+  remarks  String?
+}
+
+model StudentResult {
+  id              String   @id @default(uuid())
+  studentId       String
+  subjectId       String
+  academicYearId  String
+  term            Int
+  total           Float
+  average         Float
+  grade           String
+  subjectPosition Int
+  overallPosition Int
+  student         Student  @relation(fields: [studentId], references: [id])
+  subject         Subject  @relation(fields: [subjectId], references: [id])
+  academicYear    AcademicYear @relation(fields: [academicYearId], references: [id])
+
+  @@unique([studentId, subjectId, academicYearId, term])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String
+  action    String
+  entity    String
+  entityId  String
+  timestamp DateTime @default(now())
+}
+
+model Report {
+  id             String   @id @default(uuid())
+  studentId      String
+  academicYearId String
+  term           Int
+  pdfUrl         String
+  generatedAt    DateTime @default(now())
+  student        Student  @relation(fields: [studentId], references: [id])
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
+
+  @@unique([studentId, academicYearId, term])
+}
